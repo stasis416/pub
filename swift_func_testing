@@ -1,0 +1,40 @@
+#python 3
+# quick program that connects to an Openstack Swift API unified client and creates a container, shows container metadata, lists the container, 
+# deletes the container and stores the functionality output results in a dictionary if any of this testing fails log output via an if condition
+# Mod this to be used within a Jenkins pipeline for periodic checks, print failed if condition check to WebEx via token call
+
+import swiftclient
+
+# Create a connection to the OpenStack Swift API using credentials
+conn = swiftclient.Connection(authurl="http://auth_url:5000/v3",
+                              user="username",
+                              key="password",
+                              tenant_name="project_name",
+                              auth_version="3",
+                              os_options={"region_name": "region_name"}
+                              )
+
+# Create a container
+container_name = "my_container"
+conn.put_container(container_name)
+
+# Get container metadata
+headers, containers = conn.get_container(container_name)
+
+# Delete the container
+conn.delete_container(container_name)
+
+# Store the output results in a dictionary
+output_dict = {
+    'container_name': container_name,
+    'container_metadata': headers,
+    'containers': containers
+}
+
+print(output_dict)
+
+# Log output via an if condition
+if conn.put_container(container_name):
+    print('Container created successfully.')
+else:
+    print('Container creation failed.')
