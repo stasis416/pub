@@ -1,0 +1,22 @@
+import openstack
+
+conn = openstack.connect(cloud='openstack')
+
+# Get all IPV4 networks
+networks = conn.network.networks(ip_version=4)
+
+# Loop over networks to check IP availability
+for network in networks:
+    # Get total and used IPs
+    total_ips = conn.network.get_network_ip_availability(network).total_ips
+    used_ips = conn.network.get_network_ip_availability(network).used_ips
+    # Print information about the network
+    print(f"Network name: {network.name}")
+    print(f"Total IPs: {total_ips}")
+    print(f"Used IPs: {used_ips}\n")
+    # Calculate available IPs
+    available_ips = total_ips - used_ips
+    
+    # Print if available IPs is less than 10
+    if available_ips < 10:
+        print(f"Available IPs: {available_ips}\n")
